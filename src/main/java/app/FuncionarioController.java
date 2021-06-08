@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,7 +50,7 @@ public class FuncionarioController {
 			System.out.println("tem nada");
 			return ResponseEntity.badRequest().body(null);
 		}
-	}
+	} 
 	
 	@GetMapping("/Consulta/nome/{nome}")
 	public ResponseEntity<Funcionario> consultarNome (@PathVariable("nome") String nome){
@@ -69,6 +70,24 @@ public class FuncionarioController {
 			
 		}
 	}
+	@PutMapping("/Altera") 
+	public ResponseEntity<Object> alterarFuncionario(@RequestBody Funcionario funcionario){ //deve retornar o funcionario com a matricula em BODY
+		if(funcionarioRepository.existsById(funcionario.getMatricula())) {
+			
+			if(funcionario.getCadastro() == null) { 
+				funcionario.setCadastro(funcionarioRepository.findById(funcionario.getMatricula()).get().getCadastro());
+			}
+			
+			funcionarioRepository.save(funcionario);		
+			return ResponseEntity.ok(funcionarioRepository.findById(funcionario.getMatricula()));
+			
+		} else {
+			return ResponseEntity.status(404).body("tem ngm com esses dados 👍");
+		}
+	}
+	
+	
+	
 	@DeleteMapping("/Delete/{matricula}")
 	public ResponseEntity<String> deletarFuncionario(@PathVariable("matricula") long matricula){
 		try {
