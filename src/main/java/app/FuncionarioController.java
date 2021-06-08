@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,10 +65,23 @@ public class FuncionarioController {
 			
 		}catch(Exception e) { //caso haja mais de um com mesmo nome 
 			List<Funcionario> funcionarios = funcionarioRepository.findAllByNomeContainingIgnoreCase(nome);
-			return ResponseEntity.ok(funcionarios.get(0)); //retorna o primeiro de uma lista de funcionario
+			return ResponseEntity.ok(funcionarios.get(0)); //retorna o primeiro de uma lista de funcionarios
 			
 		}
-	
-	
 	}
+	@DeleteMapping("/Delete/{matricula}")
+	public ResponseEntity<String> deletarFuncionario(@PathVariable("matricula") long matricula){
+		try {
+			String a = funcionarioRepository.findById(matricula).get().getNome()+", " + funcionarioRepository.findById(matricula).get().getMatricula();
+			
+			funcionarioRepository.deleteById(matricula);
+			return ResponseEntity.ok(a + " removido!");
+			
+		}catch(Exception e){
+			return ResponseEntity.status(404).body("não há funcionarios com essa matricula: " + matricula );
+			
+		}
+	}
+	
+	
 }
